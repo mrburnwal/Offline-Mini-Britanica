@@ -7,7 +7,7 @@ This .py code gives out the GUI for Stegnography.
 import tkinter as tk
 from tkinter import ttk
 from tkinter import IntVar ,DISABLED ,NORMAL ,filedialog
-
+import datetime
 """
 The Main Controller.
 """
@@ -40,17 +40,10 @@ class IntroPage(tk.Frame):
                         you are a first-timer. 
         """
         message2="""
-        This application is made for basic Stenography. Assuming you know what that is,
-        we shall skip it. Steg101 hides your message or text from a file into another file
-        without affecting the target file's quality. Right now it can only use Pictures for hiding.
-        
-        Please note that it is recommended to not use a file multiple times to hide messages many 
-        messages simultanousely in multiple goes. That being said, you should know that the hide 
-        option will be disabled once a file is successfully used.
-        To hide a message again, you need to restart the application."""
+        This application is a Mini Britannica Quiz. You will be given 10 Question and 40 minutes to solve them.
+        """
         message3="""
-        Final Note: Please Enter the correct file locations and names in correct format.
-        Use "\\\\" or "/" and not "\\" for file path."""
+        """
         message4="""Warning: The Makers would not be held responsible for the actions of the User."""
         ttk.Label(self,text=message1,font=("Comic Sans MS",12,'bold')).pack(padx=20,anchor="center")
         ttk.Label(self,text=message2,font=("Helvetica",12)).pack(fill="both",anchor="center")
@@ -65,7 +58,12 @@ class StartPage(tk.Frame):
         ttk.Frame.__init__(self,parent)
         label=tk.Label(self,text="Welcome to Steg101\nPlease Select your Action:",font=("Times",14))
         label.pack(pady=(0,10))
-        button1=ttk.Button(self,text="Hide     ->",command=lambda:controller.showFrame(IntroPage))
+        
+        self.controller=controller
+       
+        self.controller.after(datetime.timedelta(seconds=40*60).seconds*1000,lambda: self.root.destroy())
+        
+        button1=ttk.Button(self,text="Hide     ->",command=lambda:self.clock_start())
         button1.pack(pady=10,anchor="center")
         button2=ttk.Button(self,text="Retrieve ->",command=lambda:print("Button 2 Pressed"))
         button2.pack(pady=10,anchor="center")
@@ -73,6 +71,26 @@ class StartPage(tk.Frame):
         button4.pack(pady=10,anchor="center")
         button3=ttk.Button(self,text="Quit",command=controller.destroy)
         button3.pack(pady=10,anchor="center")
+    def clock_start(self):
+        self.done_time=datetime.datetime.now() + datetime.timedelta(seconds=40*60) # half hour
+        self.label = tk.Label(text="")
+        self.label.pack(fill="y")
+        self.update_clock()
         
+    def update_clock(self):
+        elapsed = self.done_time - datetime.datetime.now()
+        print(elapsed.seconds)
+        #h,m,s= elapsed.seconds/3600,elapsed.seconds/60,elapsed.seconds%60   
+        h,m=0,0
+        e=elapsed.seconds
+        while(e>3600):
+            h+=1
+            e-=3600
+        while(e>60):
+            m+=1
+            e-=60
+        self.label.configure(text="Time Left:%02d:%02d:%02d"%(h,m,e))
+        self.controller.after(1000, self.update_clock)
+
 inst=SimpleEncrypt()
 inst.mainloop()
